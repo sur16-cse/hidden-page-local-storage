@@ -40,11 +40,14 @@ class MyCustomFormState extends State<MyCustomForm> {
   // and allows validation of the form.
   final _formKey = GlobalKey<FormState>();
   late int wasClicked;
+  DateTime? previousClickTime;
+  DateTime? currentClickTime;
   @override
   void initState() {
     // TODO: implement initState
-    wasClicked = 0;
     super.initState();
+    previousClickTime = null;
+    wasClicked = 0;
   }
 
   @override
@@ -122,18 +125,35 @@ class MyCustomFormState extends State<MyCustomForm> {
           child: Opacity(
             opacity: 0,
             child: ElevatedButton(
-                onPressed: () {
+              onPressed: () {
+                setState(() {
+                  currentClickTime = DateTime.now();
+                });
+                print("time $wasClicked $currentClickTime $previousClickTime");
+
+                if (previousClickTime != null &&
+                    currentClickTime!
+                            .difference(previousClickTime!)
+                            .inSeconds >=
+                        1) {
+                  setState(() {
+                    wasClicked = 0;
+                  });
+                } else {
                   setState(() {
                     wasClicked++;
                   });
-                  print(wasClicked);
-                  if (wasClicked == 10) {
-                    Navigator.of(context).pushNamed(
-                      HiddenPage.routeName,
-                    );
-                  }
-                },
-                child: const Text("Navigate")),
+                }
+
+                // Update the previous click time with the current click time
+                previousClickTime = currentClickTime;
+
+                if (wasClicked == 10) {
+                  Navigator.of(context).pushNamed(HiddenPage.routeName);
+                }
+              },
+              child: const Text("Navigate"),
+            ),
           ),
         ),
       ),
