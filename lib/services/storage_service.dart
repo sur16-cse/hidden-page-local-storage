@@ -23,6 +23,25 @@ class StorageService {
     return readData;
   }
 
+  Future<List<StorageItem>> filterSecureData(String prefix) async {
+    debugPrint("Filtering secure data with prefix: $prefix");
+    var allData = await _secureStorage.readAll(aOptions: _getAndroidOptions());
+    List<StorageItem> filteredList = [];
+
+    for (var entry in allData.entries) {
+      if (entry.key.startsWith(prefix)) {
+        var keyParts = entry.key.split('_');
+        if(keyParts.length>2){
+          var lastValueKey = keyParts.sublist(2).join('_');
+          filteredList.add(StorageItem(lastValueKey, entry.value));
+        }
+      }
+    }
+    print(filteredList[0].key);
+    return filteredList;
+  }
+
+
   Future<void> deleteSecureData(StorageItem item) async {
     debugPrint("Deleting data having key ${item.key}");
     await _secureStorage.delete(key: item.key, aOptions: _getAndroidOptions());

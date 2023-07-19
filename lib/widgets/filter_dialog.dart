@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_local_storage/widgets/textfield_decoration.dart';
 
+import '../models/storage_item.dart';
 import '../services/storage_service.dart';
 
-class SearchKeyValueDialog extends StatefulWidget {
-  const SearchKeyValueDialog({Key? key}) : super(key: key);
+class FilterDialog extends StatefulWidget {
+  const FilterDialog({super.key});
 
   @override
-  State<SearchKeyValueDialog> createState() => _SearchKeyValueDialogState();
+  State<FilterDialog> createState() => _FilterDialogState();
 }
 
-class _SearchKeyValueDialogState extends State<SearchKeyValueDialog> {
+class _FilterDialogState extends State<FilterDialog> {
   final TextEditingController _keyController = TextEditingController();
   final StorageService _storageService = StorageService();
-  String? _value;
+  List<StorageItem>? _value;
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +27,17 @@ class _SearchKeyValueDialogState extends State<SearchKeyValueDialog> {
           children: [
             TextFormField(
               controller: _keyController,
-              decoration: textFieldDecoration(hintText: "Enter Key"),
+              decoration: textFieldDecoration(hintText: "Enter Filter Key"),
             ),
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () async {
                       _value = await _storageService
-                          .readSecureData(_keyController.text);
+                          .filterSecureData(_keyController.text);
                       setState(() {});
-                      print(_value);
                     },
-                    child: const Text('Search'))),
-            _value == null
-                ? const SizedBox()
-                : Text(
-                    'Value: $_value',
-                  )
+                    child: const Text('Filter Search'))),
           ],
         ),
       ),
