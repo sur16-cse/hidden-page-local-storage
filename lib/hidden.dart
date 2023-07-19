@@ -13,21 +13,23 @@ class HiddenPage extends StatefulWidget {
 }
 
 class _HiddenPageState extends State<HiddenPage> {
+  //initialising secure storage
   final _secureStorage = const FlutterSecureStorage();
+  //list to store and display storage data
   final List<StorageData> _storageData = [];
-  List<Map<String, dynamic>> switchItems = [
-    {"name": "staging", "value": false},
-    {"name": "Production", "value": false},
-    {"name": "debug", "value": false},
-  ];
+  // switch items
 
+
+  //controller for initialise component
   final TextEditingController _newKeyController = TextEditingController();
   final TextEditingController _newValueController = TextEditingController();
 
+  //write in secure storage
   Future<void> writeSecureData(StorageData newItem) async {
     await _secureStorage.write(key: newItem.key, value: newItem.value);
   }
 
+  //read from secure storage
   Future<void> readSecureData() async {
     final allKeys = await _secureStorage.readAll();
     setState(() {
@@ -38,6 +40,7 @@ class _HiddenPageState extends State<HiddenPage> {
     });
   }
 
+  //delete from secure storage
   Future<void> deleteSecureData(String key) async {
     await _secureStorage.delete(key: key);
     setState(() {
@@ -45,6 +48,7 @@ class _HiddenPageState extends State<HiddenPage> {
     });
   }
 
+  // add new storage data after + click
   void _addNewStorageData(String key, String value) {
     final newSt = StorageData(key: key, value: value);
     setState(() {
@@ -56,27 +60,9 @@ class _HiddenPageState extends State<HiddenPage> {
   @override
   void initState() {
     super.initState();
-    loadSwitchValues();
     readSecureData();
   }
 
-  void loadSwitchValues() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      switchItems.forEach((item) {
-        if (prefs.containsKey(item['name'])) {
-          item['value'] = prefs.getBool(item['name'])!;
-        } else {
-          prefs.setBool(item['name'], item['value']);
-        }
-      });
-    });
-  }
-
-  void saveSwitchValue(String name, bool value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(name, value);
-  }
 
   Widget _buildStorageDataRow(StorageData storageData) {
     final TextEditingController _keyController = TextEditingController();
@@ -139,18 +125,6 @@ class _HiddenPageState extends State<HiddenPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ...switchItems.map((item) {
-            return SwitchListTile(
-              title: Text(item["name"]),
-              value: item['value'],
-              onChanged: (bool value) {
-                setState(() {
-                  item['value'] = value;
-                  saveSwitchValue(item['name'], value);
-                });
-              },
-            );
-          }).toList(),
           ..._storageData.map((data) => _buildStorageDataRow(data)).toList(),
 
           Container(
