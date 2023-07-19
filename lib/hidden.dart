@@ -19,20 +19,20 @@ class _HiddenPageState extends State<HiddenPage> {
     {"name": "debug", "value": false},
   ];
 
-  final TextEditingController _keyController = TextEditingController();
-  final TextEditingController _valueController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    loadSwitchValues();
-  }
+  final TextEditingController _newKeyController = TextEditingController();
+  final TextEditingController _newValueController = TextEditingController();
 
   void _addNewStorageData(String key, dynamic value) {
     final newSt = StorageData(key: key, value: value);
     setState(() {
       _storageData.add(newSt);
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadSwitchValues();
   }
 
   void loadSwitchValues() async {
@@ -54,6 +54,12 @@ class _HiddenPageState extends State<HiddenPage> {
   }
 
   Widget _buildStorageDataRow(StorageData storageData) {
+    final TextEditingController _keyController = TextEditingController();
+    final TextEditingController _valueController = TextEditingController();
+
+    _keyController.text = storageData.key;
+    _valueController.text = storageData.value;
+
     return Container(
       padding: EdgeInsets.only(left: 2, top: 4, bottom: 4),
       child: Row(
@@ -121,6 +127,7 @@ class _HiddenPageState extends State<HiddenPage> {
             );
           }).toList(),
           ..._storageData.map((data) => _buildStorageDataRow(data)).toList(),
+
           Container(
             padding: EdgeInsets.only(left: 2, top: 4, bottom: 4),
             child: Row(
@@ -136,7 +143,7 @@ class _HiddenPageState extends State<HiddenPage> {
                         color: Colors.grey[400],
                       ),
                     ),
-                    controller: _keyController,
+                    controller: _newKeyController,
                   ),
                 ),
                 SizedBox(width: 10.0),
@@ -150,18 +157,18 @@ class _HiddenPageState extends State<HiddenPage> {
                         color: Colors.grey[400],
                       ),
                     ),
-                    controller: _valueController,
+                    controller: _newValueController,
                   ),
                 ),
                 IconButton(
                   onPressed: () {
-                    final key = _keyController.text;
-                    final value = _valueController.text;
+                    final key = _newKeyController.text;
+                    final value = _newValueController.text;
 
                     _addNewStorageData(key, value);
 
-                    _keyController.clear();
-                    _valueController.clear();
+                    _newKeyController.clear();
+                    _newValueController.clear();
                   },
                   icon: Icon(Icons.add),
                 ),
