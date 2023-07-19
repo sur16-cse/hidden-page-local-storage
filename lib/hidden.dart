@@ -28,8 +28,7 @@ class _HiddenPageState extends State<HiddenPage> {
     setState(() {
       switchItems.forEach((item) {
         if (prefs.containsKey(item['name'])) {
-          print(prefs.getBool(item['name']));
-          item['value'] = prefs.getBool(item['name']);
+          item['value'] = prefs.getBool(item['name'])!;
         } else {
           prefs.setBool(item['name'], item['value']);
         }
@@ -48,10 +47,10 @@ class _HiddenPageState extends State<HiddenPage> {
       appBar: AppBar(
         title: const Text('Hidden Page'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: switchItems.map((item) {
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ...switchItems.map((item) {
             return SwitchListTile(
               title: Text(item["name"]),
               value: item['value'],
@@ -63,8 +62,42 @@ class _HiddenPageState extends State<HiddenPage> {
               },
             );
           }).toList(),
-        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                // optional flex property if flex is 1 because the default flex is 1
+                flex: 1,
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: 'Key',
+                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(
+                          color: Colors.grey[400]
+                      )
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.0),
+              Expanded(
+                // optional flex property if flex is 1 because the default flex is 1
+                flex: 1,
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: 'Value',
+                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(
+                          color: Colors.grey[400]
+                      )
+                  ),
+                ),
+              ),
+            ],
+          ),
+          ElevatedButton(onPressed: (){}, child: Text("ADD"))
+        ],
       ),
     );
   }
 }
+
