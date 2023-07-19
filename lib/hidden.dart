@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_local_storage/storage_data_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HiddenPage extends StatefulWidget {
   static const routeName = '/hidden-page';
@@ -12,6 +13,7 @@ class HiddenPage extends StatefulWidget {
 }
 
 class _HiddenPageState extends State<HiddenPage> {
+  final _secureStorage = const FlutterSecureStorage();
   final List<StorageData> _storageData = [];
   List<Map<String, dynamic>> switchItems = [
     {"name": "staging", "value": false},
@@ -22,17 +24,40 @@ class _HiddenPageState extends State<HiddenPage> {
   final TextEditingController _newKeyController = TextEditingController();
   final TextEditingController _newValueController = TextEditingController();
 
-  void _addNewStorageData(String key, dynamic value) {
+  Future<void> writeSecureData(StorageData newItem) async {
+    await _secureStorage.write(key: newItem.key, value: newItem.value);
+  }
+
+  Future<void> readSecureData() async {
+    final allKeys = await _secureStorage.readAll();
+    setState(() {
+      _storageData.clear();
+      allKeys.forEach((key, value) {
+        _storageData.add(StorageData(key: key, value: value));
+      });
+    });
+  }
+
+  Future<void> deleteSecureData(String key) async {
+    await _secureStorage.delete(key: key);
+    setState(() {
+      _storageData.removeWhere((data) => data.key == key);
+    });
+  }
+
+  void _addNewStorageData(String key, String value) {
     final newSt = StorageData(key: key, value: value);
     setState(() {
       _storageData.add(newSt);
     });
+    writeSecureData(newSt);
   }
 
   @override
   void initState() {
     super.initState();
     loadSwitchValues();
+    readSecureData();
   }
 
   void loadSwitchValues() async {
@@ -95,7 +120,7 @@ class _HiddenPageState extends State<HiddenPage> {
           IconButton(
             onPressed: () {
               setState(() {
-                _storageData.remove(storageData);
+                deleteSecureData(storageData.key);
               });
             },
             icon: Icon(Icons.delete),
