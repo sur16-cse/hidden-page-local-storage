@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hidden_local_storage/hidden.dart';
+import 'package:hidden_local_storage/views/home_view.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         body: const MyCustomForm(),
       ),
       routes: <String, WidgetBuilder>{
-        HiddenPage.routeName: (BuildContext context) => const HiddenPage()
+        HiddenPage.routeName: (BuildContext context) => const HiddenPage(title: 'Hidden Page')
       },
     );
   }
