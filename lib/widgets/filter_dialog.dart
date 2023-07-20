@@ -5,7 +5,8 @@ import '../models/storage_item.dart';
 import '../services/storage_service.dart';
 
 class FilterDialog extends StatefulWidget {
-  const FilterDialog({super.key});
+  final void Function(List<StorageItem> filteredItems) onUpdateFilter;
+  const FilterDialog({super.key, required this.onUpdateFilter});
 
   @override
   State<FilterDialog> createState() => _FilterDialogState();
@@ -33,8 +34,9 @@ class _FilterDialogState extends State<FilterDialog> {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () async {
-                      _value = await _storageService
-                          .filterSecureData(_keyController.text);
+                      // _value = await _storageService
+                      //     .filterSecureData(_keyController.text);
+                      widget.onUpdateFilter(_value!);
                       setState(() {});
                     },
                     child: const Text('Filter Search'))),
