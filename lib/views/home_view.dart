@@ -32,14 +32,13 @@ class _HiddenPageState extends State<HiddenPage> {
   }
 
   Future<void> _refreshData() async {
-    _items = await _storageService.readSecureDataWithPrefix(
-        ['dev_ops', 'devops', 'DEV_OPS', 'DEVOPS']);
+    _items = await _storageService.readAllSecureData();
   }
 
   Future<void> _deleteItem(int index) async {
     await _storageService.deleteSecureData(_items![index]);
     setState(() {
-      _items!.removeAt(index);// Remove the item from the list to update the UI
+      _items!.removeAt(index); // Remove the item from the list to update the UI
     });
   }
 
@@ -70,8 +69,7 @@ class _HiddenPageState extends State<HiddenPage> {
                           ],
                         );
                       },
-                    ))
-          ),
+                    ))),
       floatingActionButton: SizedBox(
         width: double.infinity,
         child: Padding(

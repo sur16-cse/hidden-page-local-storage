@@ -13,8 +13,10 @@ class StorageService {
 
   Future<void> writeSecureData(StorageItem newItem) async {
     debugPrint("Writing new data having key ${newItem.key}");
+    String key=newItem.key;
+    String deleteKey="DEV_OPS_$key";
     await _secureStorage.write(
-      key: newItem.key,
+      key: deleteKey,
       value: newItem.value,
       aOptions: _getAndroidOptions(),
     );
@@ -29,33 +31,35 @@ class StorageService {
     return readData;
   }
 
-  Future<List<StorageItem>> readSecureDataWithPrefix(
-      List<String> prefixes) async {
-    debugPrint("Reading secure data with prefixes: $prefixes");
-    var allData = await _secureStorage.readAll(aOptions: _getAndroidOptions());
-    List<StorageItem> filteredList = [];
 
+  Future<List<StorageItem>> readAllSecureData() async {
+    debugPrint("Reading all secured data");
+    var allData = await _secureStorage.readAll(aOptions: _getAndroidOptions());
+
+    List<StorageItem> list = [];
+    for(var entry in allData.entries){
+      print(entry.key);
+    }
     for (var entry in allData.entries) {
-      for (var prefix in prefixes) {
-        if (entry.key.startsWith(prefix)) {
-          var keyParts = entry.key.split('_');
-          if (keyParts.isNotEmpty) {
-            var lastValueKey = keyParts.last;
-            filteredList.add(StorageItem(lastValueKey, entry.value));
-          }
-          break;
-        }
+      var key = entry.key;
+      // Trim the "DEV_OPS_" prefix from the key
+      if (key.startsWith("DEV_OPS_")) {
+        key = key.substring("DEV_OPS_".length);
       }
+
+      // Create a new StorageItem object with the trimmed key and the value
+      list.add(StorageItem(key, entry.value));
     }
 
-    return filteredList;
+    return list;
   }
 
   Future<void> deleteSecureData(StorageItem item) async {
     String key=item.key;
+    print(item.key);
     String deleteKey="DEV_OPS_$key";
     await _secureStorage.delete(
-      key: "TXT",
+      key: deleteKey,
       aOptions: _getAndroidOptions(),
     );
   }
